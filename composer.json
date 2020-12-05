@@ -1,0 +1,20 @@
+{
+  "name": "ziyoren/database",
+  "description": "Database components supporting connection pooling.",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Sunline",
+      "email": "asun@66580.cn"
+    }
+  ],
+  "minimum-stability": "dev",
+  "autoload": {
+    "psr-4": {
+      "ziyoren\\": "src/"
+    }
+  },
+  "require": {
+    "catfan/medoo": "^1.7"
+  }
+}
