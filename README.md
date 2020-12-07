@@ -1,8 +1,8 @@
 
-A database component based on [meboo](https://github.com/catfan/Medoo), which can run in PHP FPM and [swoole](https://github.com/swoole/swoole-src) environment, and support database connection pool in swoole.
+A database component based on [meboo](https://github.com/catfan/Medoo), which can run in php-fpm and [swoole](https://github.com/swoole/swoole-src) environment, and support database connection pool in swoole.
 
 ## Requirement
-* PHP7.0+
+* PHP7.1+
 
 * PDO extension installed.
 
