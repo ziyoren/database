@@ -13,13 +13,21 @@ declare(strict_types=1);
 
 namespace ziyoren\Database;
 
+use RuntimeException;
 use Medoo\Medoo;
 
 class PDO extends Medoo
 {
+    protected $_prefix = '';
+
     public function __construct(array $options = [])
     {
         $options = $this->initOptions($options);
+        if (isset($options[ 'prefix' ]))
+        {
+            $this->_prefix = $options[ 'prefix' ];
+        }
+        $this->_init();
         parent::__construct($options);
     }
 
@@ -36,4 +44,43 @@ class PDO extends Medoo
         }
         return array_replace_recursive(DbConfig::getOptions(), $options);
     }
+
+    public function prefix()
+    {
+        return $this->prefix;
+    }
+
+
+    public function prefixEmpty()
+    {
+        $this->prefix = '';
+    }
+
+
+    protected function _init()
+    {
+        // initialization hook
+    }
+
+
+    public function beginTransaction(): bool
+    {
+        if ( $this->pdo->inTransaction() ) { //嵌套事务
+            throw new RuntimeException('Do\'t support nested transaction.');
+        }
+        return $this->pdo->beginTransaction();
+    }
+
+
+    public function commit(): bool
+    {
+        return $this->pdo->commit();
+    }
+
+
+    public function rollBack(): bool
+    {
+        return $this->pdo->rollBack();
+    }
+
 }

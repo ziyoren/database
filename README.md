@@ -3,9 +3,7 @@ A database component based on [meboo](https://github.com/catfan/Medoo), which ca
 
 ## Requirement
 * PHP7.1+
-
 * PDO extension installed.
-
 * Swoole 4.4+
 
 ## Get Started

@@ -14,10 +14,12 @@ declare(strict_types=1);
 namespace ziyoren\Database;
 
 
+use RuntimeException;
+
 class BaseModel extends PDO
 {
     protected $pool;
-
+    
     public function __construct(array $options = [])
     {
         $options = $this->initOptions($options);
@@ -31,11 +33,12 @@ class BaseModel extends PDO
         }
 
         if (!in_array($this->type, \PDO::getAvailableDrivers())) {
-            throw new \RuntimeException("Unsupported PDO driver: {$this->type}");
+            throw new RuntimeException("Unsupported PDO driver: {$this->type}");
         }
 
         if (isset($options['prefix'])) {
             $this->prefix = $options['prefix'];
+            $this->_prefix = $options['prefix'];
         }
 
         if (isset($options['logging']) && is_bool($options['logging'])) {
@@ -71,6 +74,8 @@ class BaseModel extends PDO
                 );
         }
 
+        $this->_init(); // initialization hook
+
         $this->pool = PDOPool::getInstance($options);
         $this->pdo = $this->pool->get();
         $this->dsn = PDOPool::dsn();
@@ -81,12 +86,37 @@ class BaseModel extends PDO
 
     }
 
+
     public function __destruct()
     {
         $this->close();
     }
 
+
+    protected function _init()
+    {
+        // initialization hook
+    }
+
+
     public function close(){
         $this->pool->close($this->pdo);
     }
+
+
+    public function beginTransaction(): bool
+    {
+        if ( $this->pdo->inTransaction() ) { //防止事务嵌套调用
+            throw new RuntimeException('Do\'t support nested transaction.');
+        }
+        Coroutine::defer(function () { //会在协程关闭之前 (即协程函数执行完毕时) 进行调用
+            if ( $this->pdo->inTransaction() ) {
+                echo '[WARNING] Transaction commit is not called, auto rollback.', PHP_EOL;
+                $this->rollBack();
+            }
+        });
+        return $this->pdo->beginTransaction();
+    }
+
+
 }
