@@ -45,8 +45,9 @@ class PDO extends Medoo
         return array_replace_recursive(DbConfig::getOptions(), $options);
     }
 
-    public function prefix()
+    public function prefix(): string
     {
+        $this->prefix = $this->_prefix;
         return $this->prefix;
     }
 

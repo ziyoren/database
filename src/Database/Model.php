@@ -12,6 +12,8 @@ declare(strict_types=1);
 namespace ziyoren\Database;
 
 
+use function ziyoren\dump;
+
 class Model
 {
 
@@ -27,6 +29,11 @@ class Model
 
         $this->model = (true === ZIYOREN_AT_SWOOLE) ? new BaseModel() : new PDO();
 
+    }
+
+
+    protected function getTable(): string
+    {
         if (empty($this->realTableName)) {
 
             if (empty($this->tableName)) {
@@ -35,6 +42,8 @@ class Model
 
             }
 
+            $this->model->prefix();
+
         } else {
 
             $this->tableName = $this->realTableName;
@@ -42,6 +51,8 @@ class Model
             $this->model->prefixEmpty();
 
         }
+
+        return $this->tableName;
     }
 
 
@@ -53,6 +64,7 @@ class Model
     {
         return strtolower(ltrim(str_ireplace(__NAMESPACE__, '', get_called_class()), '\\'));
     }
+
 
     /**
      * 以下方法中的$table参数实现自动赋值
@@ -96,7 +108,7 @@ class Model
 
         if (in_array($name, $this->has_table)) {
 
-            $arguments = array_unshift($arguments, $this->tableName);
+            array_unshift( $arguments,  $this->getTable() );
 
         }
 
