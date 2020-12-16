@@ -23,7 +23,6 @@ class BaseRedis
     {
         $options = $this->initOptions($options);
         $this->pool = RedisPool::getInstance($options);
-        $this->redis = $this->pool->get();
     }
 
     protected function initOptions($options)
@@ -47,16 +46,26 @@ class BaseRedis
     public function __call($name, $arguments)
     {
         try {
+            $this->getConnect();
             $data = $this->redis->{$name}(...$arguments);
+            $this->close();
             return $data;
         } catch (\RedisException $e) {
             throw $e;
         }
     }
 
+    public function getConnect()
+    {
+        $this->redis = $this->pool->get();
+    }
+
     public function close()
     {
-        $this->pool->close($this->redis);
+        if ($this->redis) {
+            $this->pool->close($this->redis);
+            $this->redis = null;
+        }
     }
 
 }

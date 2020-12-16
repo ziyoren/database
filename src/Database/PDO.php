@@ -40,7 +40,7 @@ class PDO extends Medoo
             }
         }
         if (empty($options) || !is_array($options)){
-            throw new \RuntimeException('Databases config empty.');
+            throw new RuntimeException('Databases config empty.');
         }
         return array_replace_recursive(DbConfig::getOptions(), $options);
     }
